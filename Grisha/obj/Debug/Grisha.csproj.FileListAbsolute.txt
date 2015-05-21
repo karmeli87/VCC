@@ -1,0 +1,17 @@
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\bin\Debug\Grisha.exe.config
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\bin\Debug\Grisha.exe
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\bin\Debug\Grisha.pdb
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\bin\Debug\en-US\Grisha.resources.dll
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\bin\Debug\en\Grisha.resources.dll
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\bin\Debug\MetroFramework.Design.dll
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\bin\Debug\MetroFramework.dll
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\Grisha.ChannelCtrl.resources
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\Grisha.Form1.resources
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\Grisha.Properties.Resources.resources
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\Grisha.Form1.en-US.resources
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\Grisha.Form1.en.resources
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\Grisha.csproj.GenerateResource.Cache
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\en-US\Grisha.resources.dll
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\en\Grisha.resources.dll
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\Grisha.exe
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\Grisha\obj\Debug\Grisha.pdb
