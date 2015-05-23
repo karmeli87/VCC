@@ -63,6 +63,10 @@ namespace VCC
             return run&&!(t.ThreadState == System.Threading.ThreadState.Stopped); 
         }
 
+        private string getProjectName(){
+            return new DirectoryInfo(that.txtProjectPath.Text).Name;
+        }
+
         private IntPtr lastFocused;
         private volatile Process process = null;
 
@@ -111,7 +115,7 @@ namespace VCC
                 string burstRelativPath = "Burst";
                 string contRelativPath = "100";
                 string[] layouts = Directory.GetFiles(that.txtLayoutPath.Text, "*.lay");
-                string projectName = new DirectoryInfo(that.txtProjectPath.Text).Name;
+                string projectName = getProjectName();
 
                // shutdown
                 bool shutdownActive = false;
@@ -304,8 +308,9 @@ namespace VCC
             }
         }*/
 
-        private void setLayouts(string procInfo, string layout, int sleepTime)
+        private void setLayouts(string procInfo, string layout, int sleepTime,int tryNum = 0)
         {
+            sendErrMail(tryNum,"Can't load layout");
             IntPtr ptr = Process.GetProcessesByName(procInfo)[0].MainWindowHandle;
             sendKeys(procInfo, "^o", sleepTime);
             sendKeys(procInfo, "%n", sleepTime);
@@ -328,7 +333,7 @@ namespace VCC
                 sendKeys(procInfo, "{ESC}", sleepTime);
                 sendKeys(procInfo, "{ESC}", sleepTime);
                 sendKeys(procInfo, "{ESC}", sleepTime);
-                setLayouts(procInfo, layout, sleepTime);
+                setLayouts(procInfo, layout, sleepTime,tryNum+1);
             }              
         }
         private void setSavingPath(string procInfo, string workingFolder, int sleepTime)
@@ -339,8 +344,9 @@ namespace VCC
             sendKeys(procInfo, "{ENTER}", sleepTime, false, false);
             sendKeys(procInfo, "{TAB}{ENTER}", sleepTime, false, false);
         }
-        private void acq(string procInfo, string filePath, int sleepTime)
+        private void acq(string procInfo, string filePath, int sleepTime,int tryNum = 0)
         {
+            sendErrMail(tryNum, "Acq failed");
             sendKeys(procInfo, "{F9}", sleepTime);
             sendKeys(procInfo, "%n", sleepTime, false, false);
             sendKeys(procInfo, filePath, sleepTime, true);
@@ -363,10 +369,11 @@ namespace VCC
                 sendKeys(procInfo, "{ESC}", sleepTime);
                 sendKeys(procInfo, "{ESC}", sleepTime);
                 sendKeys(procInfo, "{ESC}", sleepTime);
-                acq(procInfo, filePath, sleepTime);
+                acq(procInfo, filePath, sleepTime,tryNum + 1);
             }
 
         }
+        
         private void exitProcess(string procInfo,int sleepTime)
         {
             Process[] pro = Process.GetProcessesByName(procInfo);
@@ -544,6 +551,13 @@ namespace VCC
         public void msgboxError(string msg)
         {
             MessageBox.Show(msg, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        private void sendErrMail(int threshold, string msg)
+        {
+            if (threshold == 10)
+            {
+                MailService.send("Error on project " + getProjectName(), msg);
+            }
         }
     }
 }
