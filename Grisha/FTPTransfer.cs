@@ -56,8 +56,10 @@ namespace VCC
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(new Uri(Path.Combine(ftpAddress, filePath)));
             request.Credentials = new NetworkCredential(ftpUser, ftpPassword);
             request.Timeout = -1;
+            //request.Timeout = 5000;
             request.KeepAlive = true;
             request.UseBinary = true;
+            request.UsePassive = true;
             return request;
 
         }
@@ -71,10 +73,12 @@ namespace VCC
         {
             if (uploader != null && !(uploader.ThreadState == ThreadState.Stopped)) {
                 isRunning = false;
+                
                 //uploader.Abort();
                 cts.Cancel();
-                uploader.Join();
-                cts.Dispose();
+                
+                //uploader.Join();
+                //cts.Dispose();
             }
         }
         internal static void clearQueue()
@@ -131,6 +135,7 @@ namespace VCC
                 {
                     Console.WriteLine("asd");
                     MessageBox.Show("Good!", "FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    FTPTransfer.Config(username, password, server, port,progress);
                     return;
                 }
                 throw new Exception(response.StatusCode.ToString());
@@ -194,11 +199,25 @@ namespace VCC
         private static void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             myTimer t = ((myTimer)source);
-            double speed = ((double)(t.stream.Position - lastPosition)/2048); //2 sec * 1024 byte
-            string speedString = (speed > 1000) ? Convert.ToString(Math.Round(speed / 1024,2)) + "MB/s" : Convert.ToString(speed) + "KB/s";
-            string complete = (t.stream.Position*100/t.fileSize).ToString();
+            bool open = t.stream.CanRead;
+            double speed;
+            string speedString;
+            long complete;
+            if (open)
+            {
+                speed = ((double)(t.stream.Position - lastPosition) / 2048);
+                speedString = (speed > 1000) ? Convert.ToString(Math.Round(speed / 1024, 2)) + "MB/s" : Convert.ToString(speed) + "KB/s";
+                complete = t.stream.Position * 100 / t.fileSize;
+                lastPosition = t.stream.Position;
+            }
+            else
+            {
+                speedString = "lost Connection";
+                complete = lastPosition * 100 / t.fileSize;
+            }
+
             updateProgress(t.fileName, Convert.ToInt32(complete),speedString);
-            lastPosition = t.stream.Position;
+            
             
         }
         public static void createDir(string fullFilePath)
@@ -218,12 +237,19 @@ namespace VCC
                     }
                     Logger.add("DIR", dir + " was created.");
                 }
-                catch
+                catch (WebException ex)
                 {
                     // dir already exists.
+                    FtpWebResponse response = (FtpWebResponse)ex.Response;
+                    if (response.StatusCode != FtpStatusCode.ActionNotTakenFileUnavailable)
+                    {
+                        response.Close();
+                        throw new Exception(ex.Message);
+                    }
                 }
             }
         }
+        
         public static void CopyTo(this Stream source, Stream destination, CancellationToken cancellationToken, int bufferSize = 4096)
         {
             var buffer = new byte[bufferSize];
@@ -231,6 +257,7 @@ namespace VCC
             while ((count = source.Read(buffer, 0, buffer.Length)) != 0)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                destination.WriteTimeout = 2000;
                 destination.Write(buffer, 0, count);
             }
         }
@@ -243,9 +270,10 @@ namespace VCC
               //  Logger.add("FTP", "Starting new thread");
                 
                 int tryBeforeSleep = 5;
+                myTimer aTimer = new myTimer(2000);
                 while (queue.Count > 0 && tryBeforeSleep > 0 && isRunning)
                 {
-                    myTimer aTimer = new myTimer(2000);
+                    
                     try
                     {
                         // take the next file to upload
@@ -286,10 +314,11 @@ namespace VCC
                         FtpWebRequest request = getRequestObj(relativePath + "\\" +fileName);
                         request.Method = WebRequestMethods.Ftp.UploadFile;
                       
+
                         // Copy the contents of the file to the request stream.
                         using (var fs = File.OpenRead(uploadFile))
                         {
-                            Stream requestStream = request.GetRequestStream();
+                            Stream requestStream = request.GetRequestStream();              
                             Logger.add("FTP", "Start transfering the file " + fileName);
 
                             // update file progress every 2 sec.
@@ -321,15 +350,17 @@ namespace VCC
                     }
                     catch (Exception e)
                     {
+
+                        aTimer.Dispose();
                         if (token.IsCancellationRequested)
                         {
-                            aTimer.Dispose();
+//                            aTimer.Dispose();
                             Logger.add("FTP", "cancnellation req.");
                         }
                         else { 
                         Logger.add("FTP", "*** Error *** " + e.Message);
-                        tryBeforeSleep--;
-                        Thread.Sleep(1000);
+                        //tryBeforeSleep--;
+                        Thread.Sleep(120000);
                         }
                         //DialogResult result = MessageBox.Show("Transfering file failed", "FTP Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
                         //if (result == DialogResult.Cancel) throw new Exception("File transfer was cancelled!");

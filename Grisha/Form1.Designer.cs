@@ -35,6 +35,7 @@
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.Inputs = new MetroFramework.Controls.MetroUserControl();
             this.globalParams = new System.Windows.Forms.GroupBox();
+            this.MUXbypass = new MetroFramework.Controls.MetroCheckBox();
             this.txtCont = new MetroFramework.Controls.MetroTextBox();
             this.label11 = new MetroFramework.Controls.MetroLabel();
             this.txtBurst = new MetroFramework.Controls.MetroTextBox();
@@ -201,28 +202,39 @@
             // 
             // globalParams
             // 
+            this.globalParams.Controls.Add(this.MUXbypass);
             this.globalParams.Controls.Add(this.txtCont);
             this.globalParams.Controls.Add(this.label11);
             this.globalParams.Controls.Add(this.txtBurst);
             this.globalParams.Controls.Add(this.label10);
-            this.globalParams.Location = new System.Drawing.Point(4, 21);
+            this.globalParams.Location = new System.Drawing.Point(5, 21);
             this.globalParams.Name = "globalParams";
             this.globalParams.Size = new System.Drawing.Size(606, 66);
             this.globalParams.TabIndex = 8;
             this.globalParams.TabStop = false;
             this.globalParams.Text = "Global params";
             // 
+            // MUXbypass
+            // 
+            this.MUXbypass.AutoSize = true;
+            this.MUXbypass.Location = new System.Drawing.Point(474, 29);
+            this.MUXbypass.Name = "MUXbypass";
+            this.MUXbypass.Size = new System.Drawing.Size(98, 17);
+            this.MUXbypass.TabIndex = 7;
+            this.MUXbypass.Text = "MUX bypass";
+            this.MUXbypass.UseSelectable = true;
+            // 
             // txtCont
             // 
             this.txtCont.Lines = new string[] {
         "3600"};
-            this.txtCont.Location = new System.Drawing.Point(464, 27);
+            this.txtCont.Location = new System.Drawing.Point(365, 27);
             this.txtCont.MaxLength = 32767;
             this.txtCont.Name = "txtCont";
             this.txtCont.PasswordChar = '\0';
             this.txtCont.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.txtCont.SelectedText = "";
-            this.txtCont.Size = new System.Drawing.Size(125, 22);
+            this.txtCont.Size = new System.Drawing.Size(65, 22);
             this.txtCont.TabIndex = 5;
             this.txtCont.Text = "3600";
             this.txtCont.UseSelectable = true;
@@ -230,7 +242,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(331, 29);
+            this.label11.Location = new System.Drawing.Point(232, 29);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(129, 20);
             this.label11.TabIndex = 4;
@@ -246,7 +258,7 @@
             this.txtBurst.PasswordChar = '\0';
             this.txtBurst.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.txtBurst.SelectedText = "";
-            this.txtBurst.Size = new System.Drawing.Size(125, 22);
+            this.txtBurst.Size = new System.Drawing.Size(65, 22);
             this.txtBurst.TabIndex = 3;
             this.txtBurst.Text = "3720";
             this.txtBurst.UseSelectable = true;
@@ -429,7 +441,7 @@
             // metroLabel10
             // 
             this.metroLabel10.AutoSize = true;
-            this.metroLabel10.Location = new System.Drawing.Point(76, 128);
+            this.metroLabel10.Location = new System.Drawing.Point(75, 128);
             this.metroLabel10.Name = "metroLabel10";
             this.metroLabel10.Size = new System.Drawing.Size(60, 20);
             this.metroLabel10.TabIndex = 13;
@@ -438,7 +450,7 @@
             // metroLabel9
             // 
             this.metroLabel9.AutoSize = true;
-            this.metroLabel9.Location = new System.Drawing.Point(76, 72);
+            this.metroLabel9.Location = new System.Drawing.Point(75, 72);
             this.metroLabel9.Name = "metroLabel9";
             this.metroLabel9.Size = new System.Drawing.Size(60, 20);
             this.metroLabel9.TabIndex = 9;
@@ -473,7 +485,7 @@
             // metroLabel11
             // 
             this.metroLabel11.AutoSize = true;
-            this.metroLabel11.Location = new System.Drawing.Point(76, 100);
+            this.metroLabel11.Location = new System.Drawing.Point(75, 100);
             this.metroLabel11.Name = "metroLabel11";
             this.metroLabel11.Size = new System.Drawing.Size(60, 20);
             this.metroLabel11.TabIndex = 11;
@@ -495,7 +507,7 @@
             // metroLabel8
             // 
             this.metroLabel8.AutoSize = true;
-            this.metroLabel8.Location = new System.Drawing.Point(76, 42);
+            this.metroLabel8.Location = new System.Drawing.Point(75, 42);
             this.metroLabel8.Name = "metroLabel8";
             this.metroLabel8.Size = new System.Drawing.Size(57, 20);
             this.metroLabel8.TabIndex = 1;
@@ -632,7 +644,7 @@
             // 
             this.groupBox3.Controls.Add(this.btnLayoutPath);
             this.groupBox3.Controls.Add(this.txtLayoutPath);
-            this.groupBox3.Location = new System.Drawing.Point(4, 163);
+            this.groupBox3.Location = new System.Drawing.Point(5, 163);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(606, 64);
             this.groupBox3.TabIndex = 3;
@@ -666,7 +678,7 @@
             // 
             this.groupBox2.Controls.Add(this.btnProjectPath);
             this.groupBox2.Controls.Add(this.txtProjectPath);
-            this.groupBox2.Location = new System.Drawing.Point(4, 21);
+            this.groupBox2.Location = new System.Drawing.Point(5, 21);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(606, 65);
             this.groupBox2.TabIndex = 2;
@@ -720,7 +732,7 @@
             this.groupBox8.Controls.Add(this.addFTPQueue);
             this.groupBox8.Controls.Add(this.clearFTPQueue);
             this.groupBox8.Controls.Add(this.uploadsControl);
-            this.groupBox8.Location = new System.Drawing.Point(4, 228);
+            this.groupBox8.Location = new System.Drawing.Point(5, 228);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(606, 240);
             this.groupBox8.TabIndex = 10;
@@ -739,7 +751,7 @@
             // 
             // clearFTPQueue
             // 
-            this.clearFTPQueue.Location = new System.Drawing.Point(524, 11);
+            this.clearFTPQueue.Location = new System.Drawing.Point(523, 11);
             this.clearFTPQueue.Name = "clearFTPQueue";
             this.clearFTPQueue.Size = new System.Drawing.Size(75, 23);
             this.clearFTPQueue.TabIndex = 1;
@@ -761,7 +773,7 @@
             // 
             this.groupBox7.Controls.Add(this.txtEmail);
             this.groupBox7.Controls.Add(this.metroLabel12);
-            this.groupBox7.Location = new System.Drawing.Point(4, 153);
+            this.groupBox7.Location = new System.Drawing.Point(5, 153);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(606, 69);
             this.groupBox7.TabIndex = 9;
@@ -808,7 +820,7 @@
             this.FTPgroup.Controls.Add(this.ftpUser);
             this.FTPgroup.Controls.Add(this.ftpPort);
             this.FTPgroup.Controls.Add(this.metroLabel7);
-            this.FTPgroup.Location = new System.Drawing.Point(4, 21);
+            this.FTPgroup.Location = new System.Drawing.Point(5, 21);
             this.FTPgroup.Name = "FTPgroup";
             this.FTPgroup.Size = new System.Drawing.Size(606, 126);
             this.FTPgroup.TabIndex = 8;
@@ -839,7 +851,7 @@
             this.FTPmax.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::VCC.Properties.Settings.Default, "ftpMaxSize", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.FTPmax.Lines = new string[] {
         "60"};
-            this.FTPmax.Location = new System.Drawing.Point(372, 90);
+            this.FTPmax.Location = new System.Drawing.Point(373, 90);
             this.FTPmax.MaxLength = 15;
             this.FTPmax.Name = "FTPmax";
             this.FTPmax.PasswordChar = '\0';
@@ -852,7 +864,7 @@
             // 
             // ftpCheckSpinner
             // 
-            this.ftpCheckSpinner.Location = new System.Drawing.Point(236, 96);
+            this.ftpCheckSpinner.Location = new System.Drawing.Point(235, 96);
             this.ftpCheckSpinner.Maximum = 100;
             this.ftpCheckSpinner.Name = "ftpCheckSpinner";
             this.ftpCheckSpinner.Size = new System.Drawing.Size(16, 16);
@@ -887,13 +899,13 @@
             // 
             this.ftpIP.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::VCC.Properties.Settings.Default, "ftpIP", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.ftpIP.Lines = new string[0];
-            this.ftpIP.Location = new System.Drawing.Point(372, 21);
-            this.ftpIP.MaxLength = 15;
+            this.ftpIP.Location = new System.Drawing.Point(373, 21);
+            this.ftpIP.MaxLength = 20;
             this.ftpIP.Name = "ftpIP";
             this.ftpIP.PasswordChar = '\0';
             this.ftpIP.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.ftpIP.SelectedText = "";
-            this.ftpIP.Size = new System.Drawing.Size(124, 22);
+            this.ftpIP.Size = new System.Drawing.Size(123, 22);
             this.ftpIP.TabIndex = 9;
             this.ftpIP.Text = global::VCC.Properties.Settings.Default.ftpIP;
             this.ftpIP.UseSelectable = true;
@@ -949,7 +961,7 @@
             // ftpPort
             // 
             this.ftpPort.DataBindings.Add(new System.Windows.Forms.Binding("Value", global::VCC.Properties.Settings.Default, "ftpPort", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.ftpPort.Location = new System.Drawing.Point(372, 55);
+            this.ftpPort.Location = new System.Drawing.Point(373, 55);
             this.ftpPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -1016,7 +1028,7 @@
             // 
             this.logger.FontSize = MetroFramework.MetroTextBoxSize.Medium;
             this.logger.Lines = new string[0];
-            this.logger.Location = new System.Drawing.Point(4, 21);
+            this.logger.Location = new System.Drawing.Point(5, 21);
             this.logger.MaxLength = 0;
             this.logger.Multiline = true;
             this.logger.Name = "logger";
@@ -1050,9 +1062,9 @@
             this.advanceSettings.Controls.Add(this.baseTime);
             this.advanceSettings.Controls.Add(this.factorSleepTime);
             this.advanceSettings.Controls.Add(this.baseSleepTime);
-            this.advanceSettings.Location = new System.Drawing.Point(4, 17);
+            this.advanceSettings.Location = new System.Drawing.Point(5, 17);
             this.advanceSettings.Name = "advanceSettings";
-            this.advanceSettings.Size = new System.Drawing.Size(468, 96);
+            this.advanceSettings.Size = new System.Drawing.Size(469, 96);
             this.advanceSettings.TabIndex = 9;
             this.advanceSettings.TabStop = false;
             this.advanceSettings.Text = "Advance Settings";
@@ -1129,10 +1141,10 @@
             this.mFile,
             this.Operation});
             this.mainMenu.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.mainMenu.Location = new System.Drawing.Point(20, 60);
+            this.mainMenu.Location = new System.Drawing.Point(21, 60);
             this.mainMenu.Name = "mainMenu";
             this.mainMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.mainMenu.Size = new System.Drawing.Size(612, 24);
+            this.mainMenu.Size = new System.Drawing.Size(609, 24);
             this.mainMenu.TabIndex = 1;
             this.mainMenu.Text = "File";
             // 
@@ -1227,7 +1239,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(652, 643);
+            this.ClientSize = new System.Drawing.Size(651, 643);
             this.Controls.Add(this.mainTabs);
             this.Controls.Add(this.mainMenu);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1235,6 +1247,7 @@
             this.MainMenuStrip = this.mainMenu;
             this.MaximizeBox = false;
             this.Name = "Form1";
+            this.Padding = new System.Windows.Forms.Padding(21, 60, 21, 20);
             this.Resizable = false;
             this.ShadowType = MetroFramework.Forms.MetroFormShadowType.DropShadow;
             this.Text = "Cycle Controller";
@@ -1366,6 +1379,7 @@
         internal MetroFramework.Controls.MetroLabel metroLabel16;
         internal MetroFramework.Controls.MetroLabel metroLabel15;
         internal MetroFramework.Controls.MetroTextBox FTPmax;
+        internal MetroFramework.Controls.MetroCheckBox MUXbypass;
     }
 }
 

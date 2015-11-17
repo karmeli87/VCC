@@ -29,12 +29,12 @@ namespace VCC
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
         [DllImport("user32.dll")]
         static extern bool BringWindowToTop(IntPtr hWnd);
-        [DllImport("user32.dll")]
-        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-        static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-        const UInt32 SWP_NOSIZE = 0x0001;
-        const UInt32 SWP_NOMOVE = 0x0002;
-        const UInt32 SWP_SHOWWINDOW = 0x0040;
+        //[DllImport("user32.dll")]
+        //static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+        //static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        //const UInt32 SWP_NOSIZE = 0x0001;
+        //const UInt32 SWP_NOMOVE = 0x0002;
+        //const UInt32 SWP_SHOWWINDOW = 0x0040;
         #endregion
 
         private volatile bool run=false;
@@ -155,9 +155,23 @@ namespace VCC
                 aTimer.Elapsed += timeOut;
                 aTimer.Enabled = true;
                */
+
+                process = new Process();
+                Logger.add("INFO", "Opening program");
+                progHdl = getProgramHandle(process, that.txtProgram.Text);
+                if (progHdl == IntPtr.Zero)
+                    throw new Exception("Program pointer is null or the program already running!");
+                procInfo = process.ProcessName;
+                Logger.add("INFO", "Process name " + procInfo);
+                Thread.Sleep(10 * sleepTime);
+
+               // progHdl = Process.GetProcessesByName(procInfo)[0].MainWindowHandle;
+                Logger.add("INFO", "Program main handle " + progHdl);
+
                 while (run)
                 {
                     resetMux(COMport);
+
                     if (month != DateTime.Today.Month.ToString("d2"))
                     {
                         month = DateTime.Today.Month.ToString("d2");
@@ -184,6 +198,7 @@ namespace VCC
                                      ? that.txtCont.Text : that.txtBurst.Text) * 1000; //to ms
 
                         ctrl.start();
+                       /*
                         process = new Process();
                         Logger.add("INFO", "Opening program");
                         progHdl = getProgramHandle(process, that.txtProgram.Text);
@@ -195,7 +210,7 @@ namespace VCC
 
                         progHdl = Process.GetProcessesByName(procInfo)[0].MainWindowHandle;
                         Logger.add("INFO", "Program main handle " + progHdl);
-
+                        */
                         //SetWindowPos(progHdl, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
                         SetForegroundWindow(progHdl);
                         Thread.Sleep(2 * sleepTime);
@@ -224,8 +239,10 @@ namespace VCC
                         Thread.Sleep(Convert.ToInt32(timer));
                      
                         // stop , start the transfer and exit
+                        
+                        stopAcq(procInfo, sleepTime);
                         Logger.add("ACQ", "Acquiring done");
-                        exitProcess(procInfo, sleepTime);
+  //                      exitProcess(procInfo, sleepTime);
 
                         long fileSizeKB = new FileInfo(workingFolder + "\\" + outputFile).Length / 1024;
                         if (!shutdownActive && that.shutdownSwitch.Checked && mesMode == true)
@@ -280,78 +297,89 @@ namespace VCC
             run = false;
         }
 
-        /*
-        private void setLayouts2(string procInfo, string layout, int sleepTime)
-        {
-            IntPtr mHwnd = Win32.getMainHandle(procInfo);
-            IntPtr sysHwnd = Win32.getChild(mHwnd, 4);
-            Win32.ALT(sysHwnd, (IntPtr)'f');
-            Win32.ENTER(sysHwnd);
-            //Win32
-            sendKeys(procInfo, "%n", sleepTime);
-            sendKeys(procInfo, layout, sleepTime, true); // set the path
-            sendKeys(procInfo, "{ENTER}", sleepTime);
-            sendKeys(procInfo, "{RIGHT}{ENTER}", sleepTime, false, false);
-            Thread.Sleep(5 * sleepTime);
-            //check layout
-            StringBuilder sb = new StringBuilder(100);
-            Win32.GetWindowText(Process.GetProcessesByName(procInfo)[0].MainWindowHandle, sb, sb.Capacity);
-            if (!sb.ToString().Contains(Path.GetFileNameWithoutExtension(layout)))
-            {
-                Logger.add("LAY", "Failed to load, trying again");
-                throw new Exception("layout not loaded");
-                // failed to load ,so try to load again
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                setLayouts(procInfo, layout, sleepTime);
-            }
-        }*/
 
-        private void setLayouts(string procInfo, string layout, int sleepTime,int tryNum = 0)
-        {
-            sendErrMail(tryNum,"Can't load layout");
-            IntPtr ptr = Process.GetProcessesByName(procInfo)[0].MainWindowHandle;
-            sendKeys(procInfo, "^o", sleepTime);
-            sendKeys(procInfo, "%n", sleepTime);
-            sendKeys(procInfo, layout, sleepTime, true); // set the path
-            sendKeys(procInfo, "{ENTER}", sleepTime);
-            sendKeys(procInfo, "{RIGHT}{ENTER}", sleepTime, false, false);
+        private void setLayouts(string procInfo, string layout, int sleepTime,int tryNum = 1)
+        {            
+            bringMainToFront(procInfo);
+            try
+            {
+                sendKeys(procInfo, "^o", sleepTime);
+                sendKeys(procInfo, "%n", sleepTime);
+                sendKeys(procInfo, layout, sleepTime, true); // set the path
+                sendKeys(procInfo, "{ENTER}", sleepTime);
+                sendKeys(procInfo, "{RIGHT}", sleepTime, false, false);
+                sendKeys(procInfo, "{ENTER}", sleepTime, false, false);
+            }
+            catch (Exception ex)
+            {
+                setLayoutsRetry(procInfo, layout, sleepTime, tryNum + 1);
+            }
+
             Thread.Sleep(5 * sleepTime);
             //check layout
-            StringBuilder sb = new StringBuilder(100);
             
-          /*  int err = Win32.GetWindowText(ptr, sb, sb.Capacity);
-            if(err == 0)
-                Win32.GetWindowText(Win32.GetWindow(ptr, Win32.GetWindow_Cmd.GW_HWNDNEXT), sb, sb.Capacity);
-            Logger.add("LAY", String.Format("Process ({0}) name: {1}",ptr,sb.ToString()));
-            if (!sb.ToString().Contains(Path.GetFileNameWithoutExtension(layout)))*/
             if(Win32.FindWindowsWithText(Path.GetFileNameWithoutExtension(layout))==0)
             {
-                Logger.add("LAY", "Failed to load, trying again");
-                // failed to load ,so try to load again
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                setLayouts(procInfo, layout, sleepTime,tryNum+1);
+                setLayoutsRetry(procInfo, layout, sleepTime, tryNum + 1);
             }              
         }
-        private void setSavingPath(string procInfo, string workingFolder, int sleepTime)
-        {
-            sendKeys(procInfo, "%f{DOWN}{DOWN}{DOWN}{DOWN}{ENTER}", sleepTime);
-            sendKeys(procInfo, "{TAB}{ENTER}", sleepTime, false, false);
-            sendKeys(procInfo, workingFolder, sleepTime, true);
-            sendKeys(procInfo, "{ENTER}", sleepTime, false, false);
-            sendKeys(procInfo, "{TAB}{ENTER}", sleepTime, false, false);
+
+        private void setLayoutsRetry(string procInfo, string layout, int sleepTime, int tryNum) {
+            sendErrMail(tryNum, "Can't load layout");
+            Logger.add("LAYOUT", "Failed to load, trying again");
+            bringMainToFront(procInfo);
+            // failed to load ,so try to load again
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            setLayouts(procInfo, layout, sleepTime, tryNum);
         }
-        private void acq(string procInfo, string filePath, int sleepTime,int tryNum = 0)
+
+        private void setSavingPath(string procInfo, string workingFolder, int sleepTime, int tryNum = 1)
         {
-            sendErrMail(tryNum, "Acq failed");
-            sendKeys(procInfo, "{F9}", sleepTime);
-            sendKeys(procInfo, "%n", sleepTime, false, false);
-            sendKeys(procInfo, filePath, sleepTime, true);
-            //sendKeys(procInfo, Path.GetFileName(filePath), sleepTime, true);
-            sendKeys(procInfo, "{ENTER}", sleepTime, false, false);
+            bringMainToFront(procInfo);
+            try
+            {
+                sendKeys(procInfo, "%f{DOWN}{DOWN}{DOWN}{DOWN}{ENTER}", sleepTime);
+                sendKeys(procInfo, "{TAB}{ENTER}", sleepTime, false, false);
+                sendKeys(procInfo, workingFolder, sleepTime, true);
+                sendKeys(procInfo, "{ENTER}", sleepTime, false, false);
+                sendKeys(procInfo, "{TAB}{ENTER}", sleepTime, false, false);
+            }
+            catch (Exception ex)
+            {
+                setSavingPathRetry(procInfo, workingFolder, sleepTime, tryNum + 1);
+            }
+            
+        }
+
+        private void setSavingPathRetry(string procInfo, string layout, int sleepTime, int tryNum)
+        {
+            sendErrMail(tryNum, "Can't set saving path");
+            Logger.add("SAVE_PATH", "Failed to load, trying again");
+            bringMainToFront(procInfo);
+            // failed to load ,so try to load again
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            setSavingPath(procInfo, layout, sleepTime, tryNum);
+        }
+
+        private void acq(string procInfo, string filePath, int sleepTime,int tryNum = 1)
+        {
+            bringMainToFront(procInfo);
+            try
+            {
+                sendKeys(procInfo, "{F9}", sleepTime);
+                sendKeys(procInfo, "%n", sleepTime, false, false);
+                sendKeys(procInfo, filePath, sleepTime, true);
+                sendKeys(procInfo, "{ENTER}", sleepTime, false, false);
+            }
+            catch (Exception ex)
+            {
+                acqRetry(procInfo, filePath, sleepTime, tryNum + 1);
+            }
+
             //check for some data as indicate that the acq. really started
             Thread.Sleep(sleepTime);
             if (File.Exists(filePath))
@@ -362,18 +390,42 @@ namespace VCC
             }
             else
             {
-                Logger.add("ACQ", "Failed to load, trying again");
-                // failed to load ,so try to load again
-                sendKeys(procInfo, "{F10}", sleepTime);
-                sendKeys(procInfo, "{ENTER}", sleepTime);
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                sendKeys(procInfo, "{ESC}", sleepTime);
-                acq(procInfo, filePath, sleepTime,tryNum + 1);
+                acqRetry(procInfo, filePath, sleepTime, tryNum + 1);
             }
 
         }
-        
+
+        private void acqRetry(string procInfo, string filePath, int sleepTime, int tryNum)
+        {
+            sendErrMail(tryNum, "Acq failed");
+            Logger.add("ACQ", "Failed, trying again");
+            bringMainToFront(procInfo);
+            sendKeys(procInfo, "{F10}", sleepTime);
+            sendKeys(procInfo, "{ENTER}", sleepTime);
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            sendKeys(procInfo, "{ESC}", sleepTime);
+            acq(procInfo, filePath, sleepTime, tryNum);
+        }
+
+        private void stopAcq(string procInfo, int sleepTime, int tryNum = 1)
+        {
+            bringMainToFront(procInfo);
+            try { 
+                sendKeys(procInfo, "{ESC}", sleepTime);
+                sendKeys(procInfo, "{ESC}", sleepTime);
+                sendKeys(procInfo, "{ESC}", sleepTime);
+                sendKeys(procInfo, "{F10}", sleepTime);
+                sendKeys(procInfo, "{ENTER}", sleepTime);
+            }
+            catch (Exception ex)
+            {
+                Logger.add("ACQ", "Stop failed");
+                sendErrMail(tryNum, "Stop the Acq. failed");
+                bringMainToFront(procInfo);
+                stopAcq(procInfo,sleepTime,tryNum +1);
+            }
+        }
         private void exitProcess(string procInfo,int sleepTime)
         {
             Process[] pro = Process.GetProcessesByName(procInfo);
@@ -381,13 +433,14 @@ namespace VCC
             {
                 try
                 {
+                    bringMainToFront(procInfo);
                     sendKeys(procInfo, "{ESC}", sleepTime);
                     sendKeys(procInfo, "{ESC}", sleepTime);
                     sendKeys(procInfo, "{ESC}", sleepTime);
                     sendKeys(proc.ProcessName, "{F10}", sleepTime);
                     sendKeys(proc.ProcessName, "{ENTER}", sleepTime);
                     sendKeys(proc.ProcessName, "%{F4}", sleepTime);
-                    proc.WaitForExit(sleepTime * 5);
+                    proc.WaitForExit(2*sleepTime);
                 }
                 catch
                 {
@@ -400,8 +453,9 @@ namespace VCC
         {
             try { 
                 FTPTransfer.add(filepath);
-                string txtfile = createTxtfile(that.txtProjectPath.Text, filepath);
-                FTPTransfer.add(txtfile);
+                // removed txt file
+                //string txtfile = createTxtfile(that.txtProjectPath.Text, filepath);
+                //FTPTransfer.add(txtfile);
             }
             catch(Exception e)
             {
@@ -417,66 +471,101 @@ namespace VCC
             return txtfile;
         }
 
-        private void sendKeys(string procName, string keysStroke, int sleepTime, bool cb = false,bool front = true)
+        delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn,
+            IntPtr lParam);
+
+        static IEnumerable<IntPtr> EnumerateProcessWindowHandles(int processId)
         {
-            uint pid;
+            var handles = new List<IntPtr>();
 
-            IntPtr mHandle = Process.GetProcessesByName(procName)[0].MainWindowHandle;
-          //  Logger.add("PTR", "program pointer " + mHandle);
-            GetWindowThreadProcessId(GetForegroundWindow(), out pid);
-            IntPtr handle = Process.GetProcessById((int)pid).MainWindowHandle;
+            foreach (ProcessThread thread in Process.GetProcessById(processId).Threads)
+                EnumThreadWindows(thread.Id,
+                    (hWnd, lParam) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
 
-            int i = 0;
-            while (handle != mHandle && i < 10 && front)
+            return handles;
+        }
+
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr GetParent(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetLastActivePopup(IntPtr hwnd);
+
+        [DllImport("user32.dll")]
+        public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
+
+        IntPtr MainProgram;
+        public void bringDialogToFront(string name) {
+            IntPtr handle = FindWindowEx(MainProgram, IntPtr.Zero, "#32770", null);
+            Logger.add("<Front>", handle.ToString() + ":" + name);
+            SetForegroundWindow(handle);
+        }
+        public void bringMainToFront(string title)
+        {
+            // Get a handle to the Calculator application.
+            foreach (IntPtr hand in EnumerateProcessWindowHandles(
+              Process.GetProcessesByName(title).First().Id))
+                {
+                    int nRet;
+                    StringBuilder ClassName = new StringBuilder(100);
+                    //Get the window class name
+                    nRet = GetClassName(hand, ClassName, ClassName.Capacity);
+                    if (ClassName.ToString().Contains("Afx:00400000")) {
+                        MainProgram = hand;
+                        //Logger.add("<Front>", hand.ToString() + ":" + ClassName);
+                        //BringWindowToTop(hand);
+                        SetForegroundWindow(hand);
+                    }
+                }
+            IntPtr current = GetLastActivePopup(MainProgram);
+            SwitchToThisWindow(current, true);
+        }
+
+        private void sendKeys(string procName, string keysStroke, int sleepTime, bool cb = false,bool front = true) 
+        {
+            
+            //IntPtr current = GetLastActivePopup(MainProgram);
+            IntPtr current = GetWindow(MainProgram,6);
+            if (current == IntPtr.Zero) {
+                current = MainProgram;
+            }
+           // SwitchToThisWindow(current, true);
+            //IntPtr current = GetForegroundWindow();
+            SetForegroundWindow(current);
+            IntPtr owner = GetWindow(current,4);
+           // Logger.add("SendKeysInfo", current + "," + GetForegroundWindow() + ">" + keysStroke);
+            while (MainProgram != current)
             {
-
-                // SetWindowPos(mHandle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
-                if (that.InvokeRequired)
+                if (owner == IntPtr.Zero)
                 {
-                    that.BeginInvoke((Action)(() =>
-                    {
-                        that.Focus();
-                    }));
+                    Logger.add("SendKeysErr", "Cant get to front:" + MainProgram.ToString() + "," + GetForegroundWindow() + ","  + current + ">>" + keysStroke);
+                    throw new Exception("SendKeys Failed");
                 }
-                else
-                {
-                    that.Focus();
-                }
-                BringWindowToTop(mHandle);
-                SetForegroundWindow(mHandle);
-                Thread.Sleep(sleepTime * (i+1));
-                
-                mHandle = Process.GetProcessesByName(procName)[0].MainWindowHandle;
-                GetWindowThreadProcessId(GetForegroundWindow(), out pid);
-                handle = Process.GetProcessById((int)pid).MainWindowHandle;
-                i++;
-                Logger.add("KEYS", "trying to bring to front, try " + i);
+                current = owner;
+                owner = GetWindow(current, 4);
             }
-            if (i == 10) throw new Exception("Can't bring the program to front");
-
-            if (cb)
-            {   // use clipboard to avoid focus lost during keystroke
-               /*
-                IAsyncResult  IAres = that.BeginInvoke((Action)(() =>
-                {
-                    //Clipboard.Clear();
-                    Clipboard.SetDataObject(keysStroke,false,5,500);
-                    SendKeys.SendWait("^v");
-                }));
-                IAres.AsyncWaitHandle.WaitOne();
-                that.EndInvoke(IAres);
-                IAres.AsyncWaitHandle.Close();
-                */
-                SendKeys.SendWait(keysStroke);
-            }
-            else
-                SendKeys.SendWait(keysStroke);
-
+           
+           // BringWindowToTop(hand);
+            SendKeys.SendWait(keysStroke);
             Thread.Sleep(sleepTime);
             //lastFocused = GetForegroundWindow();
         }
         private void switchGroup(int group, int port)
         {
+            if (that.MUXbypass.Checked == true)
+                return;
             int trys = 6;
             for (int i = 1; i < trys; i++)
             {
@@ -499,6 +588,8 @@ namespace VCC
         }
         private int resetMux(int port)
         {
+            if (that.MUXbypass.Checked == true)
+                return 1;
             int res = Reset_mux(port);
             if (res != 1) throw new Exception("Switch did not return reset indication; result =" + res);
             Logger.add("INFO", "Mux was resetted with the result = " + res);

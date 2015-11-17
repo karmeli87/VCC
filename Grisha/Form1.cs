@@ -263,6 +263,7 @@ namespace VCC
                         string globalParamStr = "[GlobalParams]" + Environment.NewLine;
                         foreach (Control ctr in globalParamsCollection)
                             globalParamStr += ctr.Name + "=" + ctr.Text + Environment.NewLine;
+                        globalParamStr += "MUXbypass=" + this.MUXbypass.Checked;
                         sw.WriteLine(globalParamStr);
                         
                     }
@@ -324,6 +325,7 @@ namespace VCC
             foreach (Control ctr in globalParamsCollection)
                 this.Controls.Find(ctr.Name, true)[0].Text = file.GetValue("GlobalParams", ctr.Name);
 
+            this.MUXbypass.Checked = file.GetBoolean("GlobalParams", "MUXbypass");
             this.shutdownSwitch.Checked = file.GetBoolean("SetupVars", "shutdownSwitch");
 
         }

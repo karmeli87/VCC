@@ -16,8 +16,11 @@ namespace VCC
 
         public static Queue destringifyQueue(string q)
         {
+            
             Queue queue = new Queue();
-
+            if (String.IsNullOrEmpty(q)) {
+                return queue;
+            }
             foreach (string s in q.Split(';'))
             {
                 if(s.Length > 0)
