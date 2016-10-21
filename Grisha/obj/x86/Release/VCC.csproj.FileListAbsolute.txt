@@ -45,5 +45,4 @@ C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\VCC\Grisha\obj\x86
 C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\VCC\Grisha\obj\x86\Release\VCC.application
 C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\VCC\Grisha\obj\x86\Release\VCC.exe
 C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\VCC\Grisha\obj\x86\Release\VCC.pdb
-C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\VCC\Grisha\bin\x86\Release\VCC.exe.CodeAnalysisLog.xml
-C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\VCC\Grisha\bin\x86\Release\VCC.exe.lastcodeanalysissucceeded
+C:\Users\Karmeli\Documents\Visual Studio 2013\Projects\Grisha\VCC\Grisha\obj\x86\Release\VCC.csprojResolveAssemblyReference.cache

@@ -127,10 +127,18 @@ namespace VCC
             int j = 0;
             foreach (string file in Functions.destringifyQueue(Properties.Settings.Default.FTPQueue))
             {
-                Progress p = new Progress(Path.GetFileName(file));
-                p.Location = new Point(0, 31 * j);
-                this.uploadsControl.Controls.Add(p);
-                j++;
+                try
+                {
+                    Progress p = new Progress(Path.GetFileName(file));
+                    p.Location = new Point(0, 31 * j);
+                    this.uploadsControl.Controls.Add(p);
+                    j++;
+                }
+                catch
+                {
+                    continue;
+                }
+                
             }
             #endregion
 
